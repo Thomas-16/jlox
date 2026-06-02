@@ -87,7 +87,24 @@ public class Scanner {
 
             // Comment or slash
             case '/':
-                if (match('/')) { // Found a comment
+                if (match('*')) {
+                    // Multi-line comment
+                    // Keep going until we find */
+                    while (!(peek() == '*' && peekNext() == '/') && !isAtEnd()) {
+                        if (peek() == '\n') line++;
+                        advance();
+                    }
+
+                    if (isAtEnd()) {
+                        Lox.error(line, "Unterminated multi-line comment.");
+                        return;
+                    }
+
+                    // Consume the closing * and /
+                    advance();
+                    advance();
+                } else if (match('/')) {
+                    // Single-line comment
                     // We advance() until the end of the line
                     while (peek() != '\n' && !isAtEnd()) advance();
                 } else {
